@@ -10,6 +10,12 @@ namespace ServerAppTCP.Models
     public class User
     {
         public string Name { get; set; }
-        public EndPoint endPoint { get; set; } 
+        public string IpAdress { get; set; }
+        public int Port { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

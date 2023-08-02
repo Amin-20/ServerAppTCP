@@ -1,4 +1,4 @@
-﻿using ServerAppTCP.ViewModels;
+﻿using ServerAppTCP.ViewModels.UCViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +14,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ServerAppTCP
+namespace ServerAppTCP.Views.UserControls
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ChatUC.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ChatUC : UserControl
     {
-        public MainWindow()
+        public ChatUC()
         {
             InitializeComponent();
-            App.myWrapPanel = ChatWrapPanel;
-            var vm = new MainViewModel();
+            var vm = new ChatUCViewModel();
             this.DataContext = vm;
         }
     }
