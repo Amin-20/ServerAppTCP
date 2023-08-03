@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="498" Width="540">
     <Canvas>
-        <WrapPanel Name="ChatWrapPanel" Height="309" Width="205" Canvas.Left="304" Canvas.Top="23"></WrapPanel>
+        <TextBox IsEnabled="{Binding IsTextB}" Text="{Binding MessageText}" FontSize="18" Height="253" Width="205" Canvas.Left="304" Canvas.Top="23" HorizontalAlignment="Center" VerticalAlignment="Top"></TextBox>
+        <Button IsEnabled="{Binding IsSendButton}" Command="{Binding SendCommand}" Height="40" Width="181" FontSize="25" Canvas.Left="318" Canvas.Top="290" HorizontalAlignment="Center" VerticalAlignment="Top">Send</Button>
         <GroupBox Header="Users" FontSize="23" Height="446" Width="274" HorizontalAlignment="Center" Canvas.Left="15" VerticalAlignment="Top" Canvas.Top="2">
             <ListBox ItemsSource="{Binding Users}" BorderThickness="0" Name="Users" Margin="0,10,0,0" SelectedItem="{Binding SelectedUser}">
                 <i:Interaction.Triggers>
@@ -26,6 +27,5 @@
             </Button.Resources>
         </Button>
         <Label Content="{Binding ServerStatus}" FontSize="20" Height="38" Width="201" Canvas.Left="308" Canvas.Top="340" HorizontalAlignment="Center" VerticalAlignment="Top"></Label>
-        <!--<ListBox Height="414" Width="210" Canvas.Left="10" Canvas.Top="10" HorizontalAlignment="Left" VerticalAlignment="Center"></ListBox>-->
     </Canvas>
 </Window>

@@ -14,6 +14,5 @@ namespace ServerAppTCP
     /// </summary>
     public partial class App : Application
     {
-        public static WrapPanel myWrapPanel { get; set; }
     }
 }

@@ -24,7 +24,6 @@ namespace ServerAppTCP
         public MainWindow()
         {
             InitializeComponent();
-            App.myWrapPanel = ChatWrapPanel;
             var vm = new MainViewModel();
             this.DataContext = vm;
         }

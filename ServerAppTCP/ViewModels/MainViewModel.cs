@@ -7,11 +7,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using ServerAppTCP.Commands;
-using ServerAppTCP.Views.UserControls;
 using System.Windows;
 using ServerAppTCP.Models;
 using System.Collections.ObjectModel;
-using ServerAppTCP.ViewModels.UCViewModels;
 
 namespace ServerAppTCP.ViewModels
 {
@@ -19,6 +17,8 @@ namespace ServerAppTCP.ViewModels
     {
         public RelayCommand OpenServerCommand { get; set; }
         public RelayCommand SelectedUserCommand { get; set; }
+        public RelayCommand SendCommand { get; set; }
+
 
         static TcpListener listener = null;
         static BinaryReader br = null;
@@ -38,43 +38,64 @@ namespace ServerAppTCP.ViewModels
             get { return users; }
             set { users = value; OnPropertyChanged(); }
         }
-        
+
         private User selectedUser;
 
         public User SelectedUser
         {
             get { return selectedUser; }
-            set { selectedUser = value;}
+            set { selectedUser = value; }
         }
 
+        private string messageText;
+
+        public string MessageText
+        {
+            get { return messageText; }
+            set { messageText = value; OnPropertyChanged(); }
+        }
+
+
+        private bool isTextB = false;
+
+        public bool IsTextB
+        {
+            get { return isTextB; }
+            set { isTextB = value; OnPropertyChanged(); }
+        }
+
+
+        private bool isSendButton = false;
+
+        public bool IsSendButton
+        {
+            get { return isSendButton; }
+            set { isSendButton = value; OnPropertyChanged(); }
+        }
 
         static List<TcpClient> Clients { get; set; }
 
         public MainViewModel()
         {
+            var ip = IPAddress.Parse("192.168.1.10");
+            var port = 80;
+
+            var ep = new IPEndPoint(ip, port);
+            listener = new TcpListener(ep);
+            Clients = new List<TcpClient>();
+
             Users = new ObservableCollection<User>();
 
             SelectedUserCommand = new RelayCommand((obj) =>
             {
-                var chatUC = new ChatUC();
-                var chatUCvm = new ChatUCViewModel();
-                chatUCvm.IpAdress = selectedUser.IpAdress;
-                chatUCvm.Port=selectedUser.Port;
-                chatUC.DataContext = chatUCvm;
-                App.myWrapPanel.Children.Add(chatUC);
+                IsSendButton = true;
+                IsTextB = true;
             });
 
             OpenServerCommand = new RelayCommand((obj) =>
             {
-                var ip = IPAddress.Parse("10.1.18.2");
-                var port = 27001;
-
-                var ep = new IPEndPoint(ip, port);
-                listener = new TcpListener(ep);
                 listener.Start(10);
                 ServerStatus = "Server Up . . .";
-                Clients = new List<TcpClient>();
-
                 Task.Run(() =>
                 {
                     while (true)
@@ -112,24 +133,30 @@ namespace ServerAppTCP.ViewModels
                                     }).Wait(50);
                                 }
                             });
-
-                            //var writer = Task.Run(() =>
-                            //{
-                            //    while (true)
-                            //    {
-                            //        var msg = Console.ReadLine();
-                            //        foreach (var item in Clients)
-                            //        {
-                            //            var stream = item.GetStream();
-                            //            bw = new BinaryWriter(stream);
-                            //            bw.Write(msg);
-                            //        }
-                            //    }
-                            //});
                         });
                     }
                 });
             });
+
+            SendCommand = new RelayCommand((obj) =>
+            {
+                Task.Run(() =>
+                {
+                    var writer = Task.Run(() =>
+                    {
+
+                        foreach (var item in Clients)
+                        {
+                            var stream = item.GetStream();
+                            bw = new BinaryWriter(stream);
+                            bw.Write(MessageText);
+                        }
+
+                    });
+                });
+            });
+
+
         }
     }
 }
