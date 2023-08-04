@@ -77,8 +77,8 @@ namespace ServerAppTCP.ViewModels
 
         public MainViewModel()
         {
-            var ip = IPAddress.Parse("192.168.1.10");
-            var port = 80;
+            var ip = IPAddress.Parse("10.1.18.2");
+            var port = 27001;
 
             var ep = new IPEndPoint(ip, port);
             listener = new TcpListener(ep);
@@ -140,20 +140,34 @@ namespace ServerAppTCP.ViewModels
 
             SendCommand = new RelayCommand((obj) =>
             {
+                //var user = new User();
+                //foreach (var item in Users)
+                //{
+                //    if (item.Name == selectedUser.Name)
+                //    {
+                //        user = item;
+                //    }
+                //}
+
+                //listener = new TcpListener(user.LocalAdress);
+                //Clients = new List<TcpClient>();
+                //listener.Start(10);
+
                 Task.Run(() =>
                 {
                     var writer = Task.Run(() =>
                     {
-
                         foreach (var item in Clients)
                         {
                             var stream = item.GetStream();
                             bw = new BinaryWriter(stream);
                             bw.Write(MessageText);
+                            MessageText = String.Empty;
                         }
-
                     });
                 });
+
+
             });
 
 
