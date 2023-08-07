@@ -77,8 +77,8 @@ namespace ServerAppTCP.ViewModels
 
         public MainViewModel()
         {
-            var ip = IPAddress.Parse("10.1.18.2");
-            var port = 27001;
+            var ip = IPAddress.Parse("192.168.1.5");
+            var port = 80;
 
             var ep = new IPEndPoint(ip, port);
             listener = new TcpListener(ep);
@@ -96,6 +96,7 @@ namespace ServerAppTCP.ViewModels
             {
                 listener.Start(10);
                 ServerStatus = "Server Up . . .";
+                var user = new User();
                 Task.Run(() =>
                 {
                     while (true)
@@ -118,7 +119,7 @@ namespace ServerAppTCP.ViewModels
                                             try
                                             {
                                                 var msg = br.ReadString();
-                                                var user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(msg);
+                                                user = Newtonsoft.Json.JsonConvert.DeserializeObject<User>(msg);
                                                 App.Current.Dispatcher.Invoke((System.Action)delegate
                                                 {
                                                     Users.Add(user);
@@ -126,7 +127,10 @@ namespace ServerAppTCP.ViewModels
                                             }
                                             catch (Exception)
                                             {
-
+                                                App.Current.Dispatcher.Invoke((System.Action)delegate
+                                                {
+                                                    Users.Remove(user);
+                                                });
                                                 Clients.Remove(item);
                                             }
                                         }
@@ -140,37 +144,23 @@ namespace ServerAppTCP.ViewModels
 
             SendCommand = new RelayCommand((obj) =>
             {
-                //var user = new User();
-                //foreach (var item in Users)
-                //{
-                //    if (item.Name == selectedUser.Name)
-                //    {
-                //        user = item;
-                //    }
-                //}
-
-                //listener = new TcpListener(user.LocalAdress);
-                //Clients = new List<TcpClient>();
-                //listener.Start(10);
-
                 Task.Run(() =>
                 {
                     var writer = Task.Run(() =>
                     {
                         foreach (var item in Clients)
                         {
-                            var stream = item.GetStream();
-                            bw = new BinaryWriter(stream);
-                            bw.Write(MessageText);
-                            MessageText = String.Empty;
+                            if (item.Client.RemoteEndPoint.ToString() == selectedUser.LocalAdress)
+                            {
+                                var stream = item.GetStream();
+                                bw = new BinaryWriter(stream);
+                                bw.Write(MessageText);
+                                MessageText = String.Empty;
+                            }
                         }
                     });
                 });
-
-
             });
-
-
         }
     }
 }
